@@ -4,11 +4,11 @@
 
 #include <vector>
 
-// Import custom classes
+// Include custom classes
 #include <player.h>
 #include <tile.h>
 
-// Import generator class for Procedural Wall Generation
+// Include generator class for Procedural Wall Generation
 #include <generator.h>
 
 using namespace std;

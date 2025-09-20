@@ -1,6 +1,6 @@
 // core/src/generator.cpp
 
-// Import .h file
+// Include .h file
 #include <generator.h>
 
 // Include random for random numbers

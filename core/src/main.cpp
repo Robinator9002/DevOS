@@ -3,10 +3,10 @@
 #include <iostream>
 #include <vector>
 
-// Import custom classes
+// Include custom classes
 #include <dungeon.h>
 
-// Import custom getch tool
+// Include custom getch tool
 #include <getch.h>
 
 using namespace std;
