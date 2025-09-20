@@ -81,64 +81,76 @@ private:
         for (vector<int> wall : walls)
             grid[wall[0]][wall[1]].type = '#';
     }
+
+    void InitPlayer() {
+        // Get Position:
+        vector<int> pos = player->getPosition();
+
+        // Intialize Player
+        grid[pos[0]][pos[1]].type = 'P';
+    }
+
+    bool MovePlayer(const vector<int> &movement) {
+        // Save old Position for later
+        const vector<int> &pos = player->getPosition();
+
+        // Find new Position
+        vector<int> newPos = {pos[0] + movement[0], pos[1] + movement[1]};
+
+        // Validate Position
+        // if occupied or outside of map return failure
+        if (newPos[0] < 0 || newPos[0] >= rows || newPos[1] < 0 || newPos[1] >= cols)
+            return false;
+        if (!(grid[newPos[0]][newPos[1]].type == ' '))
+            return false;
+
+        // Call the Player Move Function
+        player->move(movement[0], movement[1]);
+
+        // Actualize Position in the dungeon
+        grid[pos[0]][pos[1]].type = ' ';
+        grid[newPos[0]][newPos[1]].type = 'P';
+
+        // Return success
+        return true;
+    }
+
+    void PrintBorder() {
+        // A line of cols number of # plus 2 for corners
+        for (int j = 0; j < cols + 2; ++j)
+            cout << "#";
+        cout << "\n";
+    }
+
+    void PrintDungeon() {
+        // Print out every Row and Column in the Dungeon, and borders at each side
+        PrintBorder(); // Top border
+        for (int i = 0; i < rows; ++i) {
+            cout << "#"; // Left Border
+            for (int j = 0; j < cols; ++j) {
+                cout << grid[i][j].type;
+            }
+            cout << "#\n"; // Right Border
+        }
+        PrintBorder(); // Bottom border
+    }
+
+    void Cleanup() {
+        // Clear individual Tiles
+        for (int i = 0; i < rows; ++i)
+            delete[] grid[i];
+
+        // Clear full Dungeon
+        delete[] grid;
+
+        // Clear Player
+        delete[] player;
+    }
 };
 
 struct Tile {
     char type; // ' ' = empty, '#' = wall, 'P' = Player
 };
-
-void InitPlayer() {
-    // Get Position:
-    vector<int> pos = player->getPosition();
-
-    // Intialize Player
-    grid[pos[0]][pos[1]].type = 'P';
-}
-
-bool MovePlayer(Tile **dungeon, Player *player, int rows, int cols, const vector<int> &movement) {
-    // Save old Position for later
-    const vector<int> &pos = player->getPosition();
-
-    // Find new Position
-    vector<int> newPos = {pos[0] + movement[0], pos[1] + movement[1]};
-
-    // Validate Position
-    // if occupied or outside of map return failure
-    if (newPos[0] < 0 || newPos[0] >= rows || newPos[1] < 0 || newPos[1] >= cols)
-        return false;
-    if (!(dungeon[newPos[0]][newPos[1]].type == ' '))
-        return false;
-
-    // Call the Player Move Function
-    player->move(movement[0], movement[1]);
-
-    // Actualize Position in the dungeon
-    dungeon[pos[0]][pos[1]].type = ' ';
-    dungeon[newPos[0]][newPos[1]].type = 'P';
-
-    // Return success
-    return true;
-}
-
-void PrintBorder(int cols) {
-    // A line of cols number of # plus 2 for corners
-    for (int j = 0; j < cols + 2; ++j)
-        cout << "#";
-    cout << "\n";
-}
-
-void PrintDungeon(Tile **dungeon, int rows = 5, int cols = 5) {
-    // Print out every Row and Column in the Dungeon, and borders at each side
-    PrintBorder(cols); // Top border
-    for (int i = 0; i < rows; ++i) {
-        cout << "#"; // Left Border
-        for (int j = 0; j < cols; ++j) {
-            cout << dungeon[i][j].type;
-        }
-        cout << "#\n"; // Right Border
-    }
-    PrintBorder(cols); // Bottom border
-}
 
 vector<int> convertInputToMovement(char input) {
     // Init Movement
@@ -164,18 +176,6 @@ vector<int> convertInputToMovement(char input) {
 
     // Return final Movement
     return movement;
-}
-
-void Cleanup(Tile **dungeon, int rows, Player *player) {
-    // Clear individual Tiles
-    for (int i = 0; i < rows; ++i)
-        delete[] dungeon[i];
-
-    // Clear full Dungeon
-    delete[] dungeon;
-
-    // Clear Player
-    delete[] player;
 }
 
 int main() {
