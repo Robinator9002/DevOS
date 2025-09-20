@@ -1,0 +1,99 @@
+# =====================
+# Logs
+# =====================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# =====================
+# Python
+# =====================
+__pycache__/
+.venv/
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.dylib
+
+# =====================
+# C++ / Build Artifacts
+# =====================
+build/
+CMakeFiles/
+CMakeCache.txt
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+
+# =====================
+# Node / Electron / Vite
+# =====================
+node_modules/
+dist/
+.vite/
+dist-electron/
+release/
+out/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.tgz
+
+# =====================
+# Electron / App Artifacts
+# =====================
+*.app
+*.dmg
+*.deb
+*.rpm
+
+# =====================
+# Environment / Config
+# =====================
+.env
+.env.*.local
+.rpt2_cache/
+.rts2_cache_*
+.nyc_output/
+.npm/
+.eslintcache
+.stylelintcache
+
+# =====================
+# IDE / Editor
+# =====================
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# =====================
+# OS / Misc
+# =====================
+.DS_Store
+*.swp
+Thumbs.db
+
+# =====================
+# Assets (Optional)
+# =====================
+# Uncomment if you don’t want to commit assets or images
+# assets/
+# *.png
+# *.jpg
+# *.jpeg
+# *.gif
