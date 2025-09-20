@@ -44,20 +44,20 @@ int main() {
     vector<vector<int>> walls = {{2, 3}};
 
     // Create and Initialize Dungeon and Player
-    Dungeon *dungeon = new Dungeon(rows, cols, startingPos, walls);
-    dungeon->Initialize();
+    Dungeon dungeon = Dungeon(rows, cols, startingPos, walls);
+    dungeon.Initialize();
 
     // Print out the dungeon once at the beginning
-    dungeon->Print();
+    dungeon.Print();
 
     // The main loop
     char input;
     while ((input = getch()) != 'q') {
         vector<int> movement = convertInputToMovement(input);
-        dungeon->MovePlayer(movement);
-        dungeon->Print();
+        dungeon.MovePlayer(movement);
+        dungeon.Print();
     }
 
     // Cleanup afterwards
-    dungeon->Cleanup();
+    dungeon.Cleanup();
 }

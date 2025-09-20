@@ -60,7 +60,7 @@ void Dungeon::Cleanup() {
     delete[] grid;
 
     // Clear Player
-    delete[] player;
+    delete player;
 }
 
 void Dungeon::CreateDungeon() {
