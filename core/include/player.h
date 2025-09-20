@@ -4,22 +4,19 @@
 
 #include <vector>
 
-using namespace std;
-
 class Player {
 public:
-    // Contstructor
-    Player(const vector<int> &pos) : pos(pos) {}
+    // Constructor
+    Player(const std::vector<int> &pos) : pos(pos) {}
 
     // Move Function
     void move(int x, int y);
 
+    // Getter and Setter
+    std::vector<int> getPosition() const { return pos; }
+    void setPosition(const std::vector<int> &newPos) { pos = newPos; }
+
 private:
     // Position
-    vector<int> pos;
-
-public:
-    // Getter and Setter
-    vector<int> getPosition() { return pos; }
-    void setPosition(vector<int> newPos) { pos = newPos; }
+    std::vector<int> pos;
 };

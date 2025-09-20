@@ -1,63 +1,78 @@
 // core/src/main.cpp
 
-#include <iostream>
+#include <dungeon.h>
+#include <ncurses.h>
+#include <unistd.h>
 #include <vector>
 
-// Include custom classes
-#include <dungeon.h>
-
-// Include custom getch tool
-#include <getch.h>
-
-using namespace std;
-
-vector<int> convertInputToMovement(char input) {
-    // Init Movement
-    vector<int> movement = {0, 0};
-
-    // Iterate through Input
-    switch (input) {
-    case 'w':
-        movement[0] = -1;
-        break;
-    case 'a':
-        movement[1] = -1;
-        break;
-    case 's':
-        movement[0] = 1;
-        break;
-    case 'd':
-        movement[1] = 1;
-        break;
-    default:
-        break;
-    }
-
-    // Return final Movement
-    return movement;
-}
-
 int main() {
-    // Variables
-    int rows = 10, cols = 50;
-    vector<int> startingPos = {0, 0};
-    vector<vector<int>> walls = {{2, 3}};
+    // NCURSES INITIALIZATION
+    initscr();
+    noecho();
+    cbreak();
+    curs_set(0);
+    nodelay(stdscr, TRUE);
 
-    // Create and Initialize Dungeon and Player
-    Dungeon dungeon = Dungeon(rows, cols, startingPos, walls);
+    // GAME SETUP
+    Dungeon dungeon(20, 70, {10, 35});
     dungeon.Initialize();
 
-    // Print out the dungeon once at the beginning
-    dungeon.Print();
+    // GAME LOOP
+    bool game_running = true;
+    while (game_running) {
+        // 1. INPUT
+        int ch = getch();
+        std::vector<int> movement = {0, 0};
 
-    // The main loop
-    char input;
-    while ((input = getch()) != 'q') {
-        vector<int> movement = convertInputToMovement(input);
-        dungeon.MovePlayer(movement);
+        switch (ch) {
+        case 'q':
+            game_running = false;
+            break; // Exit game
+        // WASD Movement
+        case 'w':
+            movement[0] = -1;
+            break;
+        case 'a':
+            movement[1] = -1;
+            break;
+        case 's':
+            movement[0] = 1;
+            break;
+        case 'd':
+            movement[1] = 1;
+            break;
+        // Diagonal Movement
+        case 'e':
+            movement = {-1, 1};
+            break; // Up-Right
+        case 'r':
+            movement = {-1, -1};
+            break; // Up-Left (using 'r' for qwert)
+        case 'c':
+            movement = {1, 1};
+            break; // Down-Right
+        case 'z':
+            movement = {1, -1};
+            break; // Down-Left
+        }
+
+        // 2. UPDATE
+        if (movement[0] != 0 || movement[1] != 0) {
+            dungeon.MovePlayer(movement);
+        }
+
+        // 3. DRAW
+        clear();
         dungeon.Print();
+        mvprintw(22, 2, "Use WASD, (r,e,z,c) for diagonals. Press 'q' to quit.");
+        refresh();
+
+        // 4. TIMING
+        usleep(16000); // ~60 FPS
     }
 
-    // Cleanup afterwards
-    dungeon.Cleanup();
+    // NCURSES CLEANUP
+    endwin();
+
+    return 0;
 }

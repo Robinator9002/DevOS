@@ -1,116 +1,79 @@
 // core/src/dungeon.cpp
 
-// Include .h file
 #include <dungeon.h>
+#include <generator.h> // Used locally in Initialize
+#include <ncurses.h>   // For printing functions
 
-#include <iostream>
-
-Dungeon::Dungeon(int rows, int cols, vector<int> startingPos, vector<vector<int>> walls) : rows(rows), cols(cols), startingPos(startingPos), walls(walls) {
-    // Start of by calling the create dungeon function
+Dungeon::Dungeon(int rows, int cols, std::vector<int> startingPos) : rows(rows), cols(cols), grid(nullptr), player(nullptr), startingPos(startingPos) {
     CreateDungeon();
 }
 
-void Dungeon::Initialize() {
-    // 1. Initialize the grid to be empty, as before.
-    InitDungeon();
-
-    // 2. Create a local generator to modify our grid.
-    Generator generator(rows, cols, grid, startingPos);
-
-    // 3. Tell the generator to perform the wall generation.
-    //    This will directly modify the dungeon's 'grid'.
-    generator.ProceduralGenerateWalls();
-
-    // 4. Initialize the player on the newly generated map.
-    InitPlayer();
-}
-
-bool Dungeon::MovePlayer(const vector<int> &movement) {
-    // Save old Position for later
-    const vector<int> &pos = player->getPosition();
-
-    // Find new Position
-    vector<int> newPos = {pos[0] + movement[0], pos[1] + movement[1]};
-
-    // Validate Position
-    // if occupied or outside of map return failure
-    if (newPos[0] < 0 || newPos[0] >= rows || newPos[1] < 0 || newPos[1] >= cols)
-        return false;
-    if (!(grid[newPos[0]][newPos[1]].type == ' '))
-        return false;
-
-    // Call the Player Move Function
-    player->move(movement[0], movement[1]);
-
-    // Actualize Position in the dungeon
-    grid[pos[0]][pos[1]].type = ' ';
-    grid[newPos[0]][newPos[1]].type = 'P';
-
-    // Return success
-    return true;
-}
-
-void Dungeon::Print() {
-    // Print out every Row and Column in the Dungeon, and borders at each side
-    PrintBorder(); // Top border
+Dungeon::~Dungeon() {
     for (int i = 0; i < rows; ++i) {
-        cout << "#"; // Left Border
-        for (int j = 0; j < cols; ++j) {
-            cout << grid[i][j].type;
-        }
-        cout << "#\n"; // Right Border
-    }
-    PrintBorder(); // Bottom border
-}
-
-void Dungeon::Cleanup() {
-    // Clear individual Tiles
-    for (int i = 0; i < rows; ++i)
         delete[] grid[i];
-
-    // Clear full Dungeon
+    }
     delete[] grid;
-
-    // Clear Player
     delete player;
 }
 
-void Dungeon::CreateDungeon() {
-    // Create empty Grid
-    grid = new Tile *[rows];
+void Dungeon::Initialize() {
+    InitDungeon();
 
-    // Fill Grid with Cols
-    for (int i = 0; i < rows; ++i)
+    Generator generator(rows, cols, grid, startingPos);
+    generator.ProceduralGenerateWalls();
+
+    InitPlayer();
+}
+
+bool Dungeon::MovePlayer(const std::vector<int> &movement) {
+    const std::vector<int> &pos = player->getPosition();
+    std::vector<int> newPos = {pos[0] + movement[0], pos[1] + movement[1]};
+
+    if (newPos[0] < 0 || newPos[0] >= rows || newPos[1] < 0 || newPos[1] >= cols)
+        return false;
+    if (grid[newPos[0]][newPos[1]].type != ' ')
+        return false;
+
+    grid[pos[0]][pos[1]].type = ' ';
+    player->move(movement[0], movement[1]);
+    grid[player->getPosition()[0]][player->getPosition()[1]].type = 'P';
+    return true;
+}
+
+void Dungeon::Print() const {
+    // Ncurses uses (y, x) coordinates
+    // Print top/bottom borders
+    for (int j = 0; j < cols + 2; ++j) {
+        mvaddch(0, j, '#');
+        mvaddch(rows + 1, j, '#');
+    }
+
+    // Print grid and side borders
+    for (int i = 0; i < rows; ++i) {
+        mvaddch(i + 1, 0, '#'); // Left border
+        for (int j = 0; j < cols; ++j) {
+            mvaddch(i + 1, j + 1, grid[i][j].type);
+        }
+        mvaddch(i + 1, cols + 1, '#'); // Right border
+    }
+}
+
+void Dungeon::CreateDungeon() {
+    grid = new Tile *[rows];
+    for (int i = 0; i < rows; ++i) {
         grid[i] = new Tile[cols];
+    }
 }
 
 void Dungeon::InitDungeon() {
-    // Initialize Empty
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; ++j) {
             grid[i][j].type = ' ';
         }
     }
-
-    // Initialize Walls
-    for (vector<int> wall : walls)
-        grid[wall[0]][wall[1]].type = '#';
 }
 
 void Dungeon::InitPlayer() {
-    // Create Player Class
     player = new Player(startingPos);
-
-    // Get Position
-    vector<int> pos = player->getPosition();
-
-    // Intialize Player
-    grid[pos[0]][pos[1]].type = 'P';
-}
-
-void Dungeon::PrintBorder() {
-    // A line of cols number of # plus 2 for corners
-    for (int j = 0; j < cols + 2; ++j)
-        cout << "#";
-    cout << "\n";
+    grid[startingPos[0]][startingPos[1]].type = 'P';
 }

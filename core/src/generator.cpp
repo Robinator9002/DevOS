@@ -1,99 +1,95 @@
 // core/src/generator.cpp
 
-// Include .h file
 #include <generator.h>
-
-// Include random for random numbers
-#include <random>
 #include <queue>
+#include <random>
 
-#include <iostream>
-
-using namespace std;
+Generator::Generator(int rows, int cols, Tile **grid, std::vector<int> startingPos) : rows(rows), cols(cols), grid(grid), startingPos(startingPos) {
+}
 
 void Generator::ProceduralGenerateWalls() {
-    // A modern C++ random number generator
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> wallTypeDist(0, 2); // 0=H-Line, 1=V-Line, 2=Square
-    uniform_int_distribution<> lengthDist(1, 5);
-    uniform_int_distribution<> squareDist(2, 3);
-    uniform_int_distribution<> rowDist(0, rows - 1);
-    uniform_int_distribution<> colDist(0, cols - 1);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> wallTypeDist(0, 2); // 0=H-Line, 1=V-Line, 2=Square
+    std::uniform_int_distribution<> lengthDist(2, 5);
+    std::uniform_int_distribution<> squareDist(2, 3);
+    std::uniform_int_distribution<> rowDist(0, rows - 1);
+    std::uniform_int_distribution<> colDist(0, cols - 1);
 
-    const int numberOfWallsToTry = 50; // How many wall pieces we attempt to place
+    const int numberOfWallsToTry = 75;
 
     for (int i = 0; i < numberOfWallsToTry; ++i) {
-        // 1. Decide on a random wall shape and position
-        vector<vector<int>> newWall;
-        int r = rowDist(gen);
-        int c = colDist(gen);
+        std::vector<std::vector<int>> newWallCoords;
+        int r_start = rowDist(gen);
+        int c_start = colDist(gen);
+        int type = wallTypeDist(gen);
 
-        // (Code to generate the coordinates for a line or square goes here)
-        // ... let's pretend 'newWall' is now full of {row, col} pairs ...
+        if (type == 0) { // Horizontal Line
+            int len = lengthDist(gen);
+            for (int c = 0; c < len; ++c)
+                newWallCoords.push_back({r_start, c_start + c});
+        } else if (type == 1) { // Vertical Line
+            int len = lengthDist(gen);
+            for (int r = 0; r < len; ++r)
+                newWallCoords.push_back({r_start + r, c_start});
+        } else { // Square
+            int size = squareDist(gen);
+            for (int r = 0; r < size; ++r) {
+                for (int c = 0; c < size; ++c)
+                    newWallCoords.push_back({r_start + r, c_start + c});
+            }
+        }
 
-        // 2. Check if the placement is valid (in-bounds and not overlapping)
         bool canPlace = true;
-        for (const auto& pos : newWall) {
-            if (pos[0] < 0 || pos[0] >= rows || pos[1] < 0 || pos[1] >= cols || grid[pos[0]][pos[1]].type != ' ') {
+        for (const auto &pos : newWallCoords) {
+            if (pos[0] <= 0 || pos[0] >= rows - 1 || pos[1] <= 0 || pos[1] >= cols - 1 || grid[pos[0]][pos[1]].type != ' ') {
                 canPlace = false;
                 break;
             }
         }
 
-        if (!canPlace) continue; // Try again with a new random wall
+        if (!canPlace)
+            continue;
 
-        // 3. Temporarily place the wall
-        for (const auto& pos : newWall) {
+        for (const auto &pos : newWallCoords)
             grid[pos[0]][pos[1]].type = '#';
-        }
 
-        // 4. Check for connectivity. If it's broken, undo the change.
         if (!IsConnected()) {
-            for (const auto& pos : newWall) {
-                grid[pos[0]][pos[1]].type = ' '; // Revert
-            }
+            for (const auto &pos : newWallCoords)
+                grid[pos[0]][pos[1]].type = ' ';
         }
     }
 }
 
 bool Generator::IsConnected() {
-    // Find total number of empty tiles
     int totalEmptyTiles = 0;
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
-            if (grid[i][j].type == ' ') {
+            if (grid[i][j].type == ' ')
                 totalEmptyTiles++;
-            }
         }
     }
+    if (totalEmptyTiles == 0)
+        return true;
 
-    // If there are no empty tiles, it's technically connected.
-    if (totalEmptyTiles == 0) return true;
-
-    // Setup for BFS
-    queue<vector<int>> q;
-    vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+    std::queue<std::vector<int>> q;
+    std::vector<std::vector<bool>> visited(rows, std::vector<bool>(cols, false));
     int reachableEmptyTiles = 0;
 
-    // Start BFS from player's starting position (guaranteed to be empty)
     q.push(startingPos);
     visited[startingPos[0]][startingPos[1]] = true;
 
     while (!q.empty()) {
-        vector<int> current = q.front();
+        std::vector<int> current = q.front();
         q.pop();
         reachableEmptyTiles++;
 
-        // Check neighbors (Up, Down, Left, Right)
         int dr[] = {-1, 1, 0, 0};
         int dc[] = {0, 0, -1, 1};
 
         for (int i = 0; i < 4; ++i) {
             int newRow = current[0] + dr[i];
             int newCol = current[1] + dc[i];
-
-            // Check bounds and if it's a valid, unvisited empty tile
             if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols &&
                 !visited[newRow][newCol] && grid[newRow][newCol].type == ' ') {
                 visited[newRow][newCol] = true;
@@ -101,7 +97,5 @@ bool Generator::IsConnected() {
             }
         }
     }
-
-    // If we reached every empty tile, the map is connected.
     return totalEmptyTiles == reachableEmptyTiles;
 }

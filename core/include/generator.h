@@ -2,27 +2,24 @@
 
 #pragma once
 
-#include <vector>
-
-// Include tile class for type definition
 #include "tile.h"
+#include <vector>
 
 class Generator {
 public:
     // Constructor
-    Generator(int rows, int cols, Tile **grid, std::vector<int> startingPos) : rows(rows), cols(cols), grid(grid), startingPos(startingPos) {}
+    Generator(int rows, int cols, Tile **grid, std::vector<int> startingPos);
 
+    // The main public method to start generation
+    void ProceduralGenerateWalls();
+
+private:
+    // Member variables to hold the context
     int rows;
     int cols;
     Tile **grid;
     std::vector<int> startingPos;
 
-    // Generate the Walls randomly
-    // Needs to be public because Dungeon calls it
-    void ProceduralGenerateWalls();
-
-private:
-    // Checks if every tile on the map is reachable
-    // Can stay private as a helper function
+    // Helper function to check if the map is still fully connected
     bool IsConnected();
 };
