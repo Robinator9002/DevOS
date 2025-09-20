@@ -1,4 +1,4 @@
-// api/core/include/getch.h
+// core/include/getch.h
 
 #include <iostream>
 #include <termios.h>
