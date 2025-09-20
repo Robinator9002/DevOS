@@ -12,10 +12,7 @@ public:
     Player(const vector<int> &pos) : pos(pos) {}
 
     // Move Function
-    void move(int x, int y) {
-        pos[0] += x;
-        pos[1] += y;
-    }
+    void move(int x, int y);
 
 private:
     // Position
