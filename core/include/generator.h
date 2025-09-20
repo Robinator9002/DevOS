@@ -10,12 +10,12 @@
 class Generator {
 public:
     // Constructor
-    Generator(int rows, int cols, Tile **grid, vector<int> startingPos) : rows(rows), cols(cols), grid(grid), startingPos(startingPos) {}
+    Generator(int rows, int cols, Tile **grid, std::vector<int> startingPos) : rows(rows), cols(cols), grid(grid), startingPos(startingPos) {}
 
     int rows;
     int cols;
     Tile **grid;
-    vector<int> startingPos;
+    std::vector<int> startingPos;
 
     // Generate the Walls randomly
     // Needs to be public because Dungeon calls it
