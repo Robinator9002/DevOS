@@ -10,18 +10,19 @@
 class Generator {
 public:
     // Constructor
-    Generator(int rows, int cols, Tile** grid, vector<int> startingPos) :
-        rows(rows), cols(cols), grid(grid), startingPos(startingPos) {}
+    Generator(int rows, int cols, Tile **grid, vector<int> startingPos) : rows(rows), cols(cols), grid(grid), startingPos(startingPos) {}
 
     int rows;
     int cols;
-    Tile** grid;
+    Tile **grid;
     vector<int> startingPos;
 
-private:
     // Generate the Walls randomly
-    void ProceduralGenerateWalls();    
+    // Needs to be public because Dungeon calls it
+    void ProceduralGenerateWalls();
 
+private:
     // Checks if every tile on the map is reachable
+    // Can stay private as a helper function
     bool IsConnected();
 };
