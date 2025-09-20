@@ -1,6 +1,9 @@
 // core/src/dungeon.cpp
 
+// Include .h file
 #include <dungeon.h>
+
+#include <iostream>
 
 Dungeon::Dungeon(int rows, int cols, vector<int> startingPos, vector<vector<int>> walls) : rows(rows), cols(cols), startingPos(startingPos), walls(walls) {
     // Start of by calling the create dungeon function

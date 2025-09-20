@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <vector>
 
 // Import custom classes
