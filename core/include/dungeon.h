@@ -8,6 +8,9 @@
 #include <player.h>
 #include <tile.h>
 
+// Import generator class for Procedural Wall Generation
+#include <generator.h>
+
 using namespace std;
 
 class Dungeon {
@@ -22,6 +25,8 @@ public:
     Player *player;
     vector<int> startingPos;
     vector<vector<int>> walls;
+
+    Generator generator;
 
     // Initialize function calls all other private init functions
     void Initialize();

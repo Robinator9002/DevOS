@@ -5,14 +5,20 @@
 
 #include <iostream>
 
-Dungeon::Dungeon(int rows, int cols, vector<int> startingPos, vector<vector<int>> walls) : rows(rows), cols(cols), startingPos(startingPos), walls(walls) {
+Dungeon::Dungeon(int rows, int cols, vector<int> startingPos, vector<vector<int>> walls) : rows(rows), cols(cols), startingPos(startingPos), walls(walls), generator(rows, cols, grid, startingPos) {
     // Start of by calling the create dungeon function
     CreateDungeon();
 }
 
 void Dungeon::Initialize() {
-    // Initialize Grid and Player Variables
+    // 1. Initialize the grid to be empty, as before.
     InitDungeon();
+
+    // 2. Tell the generator to perform the wall generation.
+    //    This will directly modify the dungeon's 'grid'.
+    generator.ProceduralGenerateWalls();
+
+    // 3. Initialize the player on the newly generated map.
     InitPlayer();
 }
 
