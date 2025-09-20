@@ -1,5 +1,7 @@
 // core/include/player.h
 
+#pragma once
+
 #include <vector>
 
 using namespace std;
