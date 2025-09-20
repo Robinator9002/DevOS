@@ -25,7 +25,7 @@ char getch() {
 class Player {
     public:
         // Contstructor
-        Player(const vector<int>& position) : pos(position) {}
+        Player(const vector<int>& pos) : pos(pos) {}
 
         // Move Function
         void move(int x, int y) {
@@ -41,44 +41,52 @@ class Player {
         void setPosition(vector<int> newPos) { pos = newPos; }
 };
 
+class Dungeon {
+    public:
+        Dungeon(int rows, int cols, vector<vector<int>> walls) : rows(rows), cols(cols), walls(walls) {
+            CreateDungeon();
+        }
+
+        int rows;
+        int cols;
+        vector<vector<int>> walls;
+        Tile** grid;
+        Player* player;
+
+    private:
+        void CreateDungeon() {
+            // Create empty Grid
+            grid = new Tile*[rows];
+
+            // Fill Grid with Cols
+            for (int i = 0; i < rows; ++i)
+                grid[i] = new Tile[cols];
+        }
+
+        void InitDungeon() {
+            // Initialize Empty
+            for(int i = 0; i < rows; i++) {
+                for(int j = 0; j < cols; ++j) {
+                    grid[i][j].type = ' ';
+                }
+            }
+
+            // Initialize Walls
+            for(vector<int> wall : walls)
+                grid[wall[0]][wall[1]].type = '#';
+        }
+};
+
 struct Tile {
     char type; // ' ' = empty, '#' = wall, 'P' = Player
 };
 
-Tile** CreateDungeon(int rows=5, int cols=5) {
-    // Create empty Dungeon
-    Tile** dungeon = new Tile*[rows];
-
-    // Fill Dungeon with Cols
-    for (int i = 0; i < rows; ++i)
-        dungeon[i] = new Tile[cols];
-
-    // Return Empty, Structured Dungeon
-    return dungeon;
-}
-
-static const vector<vector<int>> defaultWalls = {{1,1},{2,3}};
-void InitDungeon(Tile** dungeon, int rows=5, int cols=5,
-        const vector<vector<int>>& walls = defaultWalls
-    ) {
-    // Initialize Empty
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < cols; ++j) {
-            dungeon[i][j].type = ' ';
-        }
-    }
-
-    // Initialize Walls
-    for(vector<int> wall : walls)
-        dungeon[wall[0]][wall[1]].type = '#';
-}
-
-void InitPlayer(Tile** dungeon, Player* player) {
+void InitPlayer() {
     // Get Position:
     vector<int> pos = player->getPosition();
 
     // Intialize Player
-    dungeon[pos[0]][pos[1]].type = 'P';
+    grid[pos[0]][pos[1]].type = 'P';
 }
 
 bool MovePlayer(Tile** dungeon, Player* player, int rows, int cols, const vector<int>& movement) {
