@@ -44,7 +44,7 @@ int main() {
     vector<vector<int>> walls = {{2, 3}};
 
     // Create and Initialize Dungeon and Player
-    Dungeon *dungeon = &Dungeon(rows, cols, startingPos, walls);
+    Dungeon *dungeon = new Dungeon(rows, cols, startingPos, walls);
     dungeon->Initialize();
 
     // Print out the dungeon once at the beginning

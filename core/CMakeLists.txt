@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Source files
 add_library(devos_core STATIC
-    src/hello.cpp
+    src/dungeon.cpp
+    src/player.cpp
 )
 
 target_include_directories(devos_core PUBLIC include)
