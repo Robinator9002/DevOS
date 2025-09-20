@@ -26,8 +26,6 @@ public:
     vector<int> startingPos;
     vector<vector<int>> walls;
 
-    Generator generator;
-
     // Initialize function calls all other private init functions
     void Initialize();
 
